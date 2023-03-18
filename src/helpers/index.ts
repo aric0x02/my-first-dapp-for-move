@@ -9,3 +9,4 @@ export * from './util';
 export * from './contract';
 export * from './chainProps';
 export * from './output';
+export * from './utils';

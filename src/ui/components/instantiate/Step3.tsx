@@ -11,15 +11,15 @@ import { SubmittableResult } from 'types';
 import { useNewContract } from 'ui/hooks';
 
 export function Step3() {
-  const { codeHash: codeHashUrlParam } = useParams<{ codeHash: string }>();
+  //   const { codeHash: codeHashUrlParam } = useParams<{ codeHash: string }>();
   const { data, step, setStep } = useInstantiate();
   const { api } = useApi();
-  const { accountId, value, metadata, gasLimit, name, constructorIndex } = data;
+  const { accountId } = data;
   const { queue, process, txs, dismiss } = useTransactions();
   const [txId, setTxId] = useState<number>(0);
   const onSuccess = useNewContract();
 
-  const displayHash = codeHashUrlParam || metadata?.info.source.wasmHash.toHex();
+  //   const displayHash = codeHashUrlParam || metadata?.info.source.wasmHash.toHex();
 
   useEffect(() => {
     const isValid = (result: SubmittableResult) => !result.isError && !result.dispatchError;
@@ -46,7 +46,7 @@ export function Step3() {
     processTx().catch(e => console.error(e));
   };
 
-  if (step !== 3) return null;
+  if (step !== 2) return null;
 
   return (
     <>
@@ -60,26 +60,7 @@ export function Step3() {
 
         <div className="field full">
           <p className="key">Name</p>
-          <p className="value">{name}</p>
         </div>
-        {metadata?.constructors[constructorIndex].isPayable && value && (
-          <div className="field">
-            <p className="key">Value</p>
-            <p className="value">{printBN(value)}</p>
-          </div>
-        )}
-
-        <div className="field">
-          <p className="key">Weight</p>
-          <p className="value">{gasLimit && printBN(gasLimit.refTime.toBn())}</p>
-        </div>
-
-        {displayHash && (
-          <div className="field">
-            <p className="key">Code Hash</p>
-            <p className="value">{truncate(displayHash)}</p>
-          </div>
-        )}
 
         {txs[txId]?.extrinsic.args[3] && (
           <div className="field">

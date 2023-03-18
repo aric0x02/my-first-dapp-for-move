@@ -82,6 +82,10 @@
     "@typescript-eslint/no-empty-function": "off",
     "@typescript-eslint/no-misused-promises": "off",
     "@typescript-eslint/explicit-module-boundary-types": "off",
+    // needs to be switched on at some point
+    "@typescript-eslint/no-explicit-any": "off",
+    // this seems very broken atm, false positives
+    "@typescript-eslint/unbound-method": "off",
     "react/display-name": "off",
     "react/react-in-jsx-scope": "off"
   }

@@ -40,6 +40,7 @@ export interface InstantiateData {
   argValues?: Record<string, unknown>;
   value?: Balance;
   metadata?: Abi;
+  databytes?: Uint8Array;
   name: string;
   constructorIndex: number;
   salt: string | Uint8Array | Bytes | null;

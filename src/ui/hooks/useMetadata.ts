@@ -95,7 +95,7 @@ function validate(metadata: Abi | undefined, { isWasmRequired }: Options): Valid
   };
 }
 
-const utf8decoder = new TextDecoder();
+// const utf8decoder = new TextDecoder();
 
 export function useMetadata(
   initialValue?: Record<string, unknown>,
@@ -104,46 +104,45 @@ export function useMetadata(
   const { api } = useApi();
 
   const { isWasmRequired = false, ...callbacks } = options;
-  const [state, setState] = useState<MetadataState>(() =>
-    deriveFromJson({ isWasmRequired }, initialValue, api)
-  );
+  //   const [state, setState] = useState<MetadataState>(() =>
+  //     deriveFromJson({ isWasmRequired }, initialValue, api)
+  //   );
 
   function onChange(file: FileState): void {
     try {
-      const json = JSON.parse(utf8decoder.decode(file.data)) as Record<string, unknown>;
-      const name = file.name.replace('.contract', '').replace('.json', '').replace('_', ' ');
+      //   const json = JSON.parse(utf8decoder.decode(file.data)) as Record<string, unknown>;
+      //   const name = file.name.replace('.contract', '').replace('.json', '').replace('_', ' ');
 
-      const newState = deriveFromJson({ isWasmRequired, name }, json, api);
+      //   const newState = deriveFromJson({ isWasmRequired, name }, json, api);
 
-      setState(newState);
+      //   setState(newState);
 
-      callbacks.onChange && callbacks.onChange(file, json);
+      callbacks.onChange && callbacks.onChange(file);
     } catch (error) {
       console.error(error);
 
-      setState({
-        ...EMPTY,
-        message: 'This contract file is not in a valid format.',
-        isError: true,
-        isSupplied: true,
-        isValid: false,
-      });
+      //   setState({
+      //     ...EMPTY,
+      //     message: 'This contract file is not in a valid format.',
+      //     isError: true,
+      //     isSupplied: true,
+      //     isValid: false,
+      //   });
     }
   }
 
   function onRemove(): void {
-    setState(EMPTY);
+    // setState(EMPTY);
 
     callbacks.onChange && callbacks.onChange(undefined);
     callbacks.onRemove && callbacks.onRemove();
   }
 
-  useEffect((): void => {
-    setState(deriveFromJson({ isWasmRequired }, initialValue, api));
-  }, [api, initialValue, isWasmRequired]);
+  //   useEffect((): void => {
+  //     // setState(deriveFromJson({ isWasmRequired }, initialValue, api));
+  //   }, [api, initialValue, isWasmRequired]);
 
   return {
-    ...state,
     onChange,
     onRemove,
   };

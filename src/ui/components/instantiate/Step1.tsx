@@ -1,7 +1,7 @@
 // Copyright 2022 @paritytech/contracts-ui authors & contributors
 // SPDX-License-Identifier: GPL-3.0-only
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'react-router';
 import { Button, Buttons } from '../common/Button';
 import { Input, InputFile, Form, FormField, useMetadataField, getValidation } from '../form';
@@ -11,6 +11,7 @@ import { CodeHash } from './CodeHash';
 import { useNonEmptyString } from 'ui/hooks/useNonEmptyString';
 import { useApi, useDatabase, useInstantiate } from 'ui/contexts';
 import { useDbQuery } from 'ui/hooks';
+import type { FileState, OrFalsy } from 'types';
 
 export function Step1() {
   const { codeHash: codeHashUrlParam } = useParams<{ codeHash: string }>();
@@ -23,8 +24,8 @@ export function Step1() {
   const { setStep, setData, data, step } = useInstantiate();
 
   const [accountId, setAccountId] = useState('');
+  const [databytes, setDatabytes] = useState<OrFalsy<FileState>>(null);
   const { value: name, onChange: setName, ...nameValidation } = useNonEmptyString();
-
   const {
     file,
     value: metadata,
@@ -52,6 +53,7 @@ export function Step1() {
         ...data,
         accountId,
         metadata,
+        databytes: databytes?.data,
         name,
         codeHash: codeHashUrlParam,
       });
@@ -111,7 +113,7 @@ export function Step1() {
           >
             <InputFile
               placeholder="Click to select or drag and drop to upload file."
-              onChange={onChange}
+              onChange={setDatabytes}
               onRemove={onRemove}
               isError={metadataValidation.isError}
               value={file}
@@ -120,12 +122,7 @@ export function Step1() {
         )}
       </Form>
       <Buttons>
-        <Button
-          isDisabled={!metadata || !nameValidation.isValid || !metadataValidation.isValid}
-          onClick={submitStep1}
-          variant="primary"
-          data-cy="next-btn"
-        >
+        <Button isDisabled={!databytes} onClick={submitStep1} variant="primary" data-cy="next-btn">
           Next
         </Button>
       </Buttons>
