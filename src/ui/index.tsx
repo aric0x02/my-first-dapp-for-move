@@ -16,6 +16,7 @@ import {
   Settings,
   NotFound,
   AddressLookup,
+  TodoList,
 } from 'ui/pages';
 
 globalThis.Buffer = Buffer;
@@ -34,6 +35,7 @@ root.render(
         <Route path="add-contract" element={<AddContract />} />
         <Route path="address-lookup" element={<AddressLookup />} />
         <Route path="hash-lookup" element={<SelectCodeHash />} />
+        <Route path="todo" element={<TodoList />} />
         <Route path="instantiate" element={<Instantiate />}>
           <Route path=":codeHash" />
         </Route>

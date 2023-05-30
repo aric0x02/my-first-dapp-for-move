@@ -36,6 +36,7 @@
     "@polkadot/extension-dapp": "^0.44.7",
     "@polkadot/ui-keyring": "^2.9.14",
     "@polkadot/ui-shared": "^2.9.14",
+    "antd": "^5.5.1",
     "big.js": "^6.2.1",
     "buffer": "^6.0.3",
     "copy-to-clipboard": "^3.3.3",
