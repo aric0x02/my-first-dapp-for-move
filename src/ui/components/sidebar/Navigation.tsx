@@ -10,6 +10,9 @@ export function Navigation() {
       <NavLink to={`/add-contract`} icon={DocumentAddIcon}>
         Add New Contract
       </NavLink>
+      <NavLink to={`/todo`} icon={DocumentAddIcon}>
+        To Do
+      </NavLink>
       <NavLink icon={CollectionIcon} to={`/`} end>
         All Contracts
       </NavLink>

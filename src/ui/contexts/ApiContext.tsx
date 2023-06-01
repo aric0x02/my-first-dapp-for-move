@@ -11,7 +11,7 @@ import { ApiPromise, ApiState, ChainProperties, Account, Status, WeightV2 } from
 import { isValidWsUrl, isKeyringLoaded, getChainProperties } from 'helpers';
 import { useLocalStorage } from 'ui/hooks/useLocalStorage';
 import { NoticeBanner } from 'ui/components/common/NoticeBanner';
-// import { typesBundle } from './typesBundle';
+import { typesBundle } from './typesBundle';
 export const ApiContext = createContext<ApiState | undefined>(undefined);
 
 export const ApiContextProvider = ({ children }: React.PropsWithChildren<Partial<ApiState>>) => {
@@ -41,7 +41,7 @@ export const ApiContextProvider = ({ children }: React.PropsWithChildren<Partial
     const wsProvider = new WsProvider(endpoint);
     const _api = new ApiPromise({
       provider: wsProvider,
-      typesBundle: require('./typesBundle.json'),
+      typesBundle,
     });
     _api.on('connected', async () => {
       await _api.isReady;

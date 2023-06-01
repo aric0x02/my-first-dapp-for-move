@@ -14,6 +14,16 @@ import {
   SubmittableExtrinsic,
 } from 'types';
 
+export function createExecuteTx(
+  api: ApiPromise,
+  databytes: string
+): SubmittableExtrinsic<'promise'> {
+  if (databytes) {
+    return api.tx.mvm.execute(databytes, 1000000);
+  } else {
+    throw new Error('Error creating execute tx');
+  }
+}
 export function createInstantiateTx(
   api: ApiPromise,
   { databytes }: Omit<InstantiateData, 'name'>

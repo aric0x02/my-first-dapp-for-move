@@ -26,7 +26,7 @@ export async function submitRpc(
 
     const result = await rpc[section][method](...values);
 
-    console.log('submitRpc: result ::', loggerFormat(result));
+    console.log('submitRpc: result ::', loggerFormat(JSON.stringify(result)));
 
     return {
       result,

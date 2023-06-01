@@ -67122,6 +67122,55 @@ export const typesBundle = {
             ],
             type: 'u64',
           },
+          getModuleABIs: {
+            aliasSection: 'mvm',
+            description: 'mvm_getModuleABIs',
+            params: [
+              {
+                name: 'module_id',
+                type: 'Bytes',
+              },
+            ],
+            type: 'Option<Bytes>',
+          },
+          getResources3: {
+            aliasSection: 'mvm',
+            description: 'mvm_getResources3',
+            params: [
+              {
+                name: 'account_id',
+                type: 'AccountId',
+              },
+              {
+                name: 'tag',
+                type: 'Bytes',
+              },
+            ],
+            type: 'Option<Bytes>',
+          },
+          getTableEntry: {
+            aliasSection: 'mvm',
+            description: 'mvm_getTableEntry',
+            params: [
+              {
+                name: 'handle',
+                type: 'Bytes',
+              },
+              {
+                name: 'key',
+                type: 'Bytes',
+              },
+              {
+                name: 'key_type',
+                type: 'Bytes',
+              },
+              {
+                name: 'value_type',
+                type: 'Bytes',
+              },
+            ],
+            type: 'Option<Bytes>',
+          },
         },
       },
       types: [
