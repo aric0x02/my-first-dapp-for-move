@@ -1,8 +1,20 @@
-import { Layout, Row, Col, Button, Spin, List, Checkbox, Input, Space } from 'antd';
+import {
+  Layout,
+  Row,
+  Col,
+  Button,
+  Spin,
+  List,
+  Checkbox,
+  Input,
+  Space,
+  ConfigProvider,
+  theme,
+} from 'antd';
 
 import React, { useEffect, useState } from 'react';
 
-import './index.css';
+// import './index.css';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 // import { Network, Provider } from "aptos";
 import { ApiPromise, WsProvider } from '@polkadot/api';
@@ -202,7 +214,7 @@ export function Todo() {
   //     // return s;
   // };
   const fetchList = async () => {
-    // if (!accountId) return [];
+    if (!accountId) return [];
     try {
       const todoListResource = await getAccountResource(
         accountId,
@@ -345,98 +357,104 @@ export function Todo() {
 
   return (
     <>
-      <Layout>
-        <Row align="middle">
-          <Col span={10} offset={2}>
-            <h1>Our todolist</h1>
-          </Col>
-          <Col span={12} style={{ textAlign: 'right', paddingRight: '200px' }}>
-            <AccountSelect
-              id="accountId"
-              className="mb-2"
-              value={accountId}
-              onChange={setAccountId}
-            />
-          </Col>
-        </Row>
-      </Layout>
-      <Spin spinning={transactionInProgress}>
-        {!accountHasList ? (
-          <Row gutter={[0, 32]} style={{ marginTop: '2rem' }}>
-            <Col span={8} offset={8}>
-              <Button
-                disabled={!accountId}
-                block
-                onClick={addNewList}
-                type="primary"
-                style={{ height: '40px', backgroundColor: '#3f67ff' }}
-              >
-                Add new list
-              </Button>
+      <ConfigProvider
+        theme={{
+          algorithm: theme.darkAlgorithm,
+        }}
+      >
+        <Layout>
+          <Row align="middle">
+            <Col span={10} offset={2}>
+              <h1>Our todolist</h1>
+            </Col>
+            <Col span={12} style={{ textAlign: 'right', paddingRight: '200px' }}>
+              <AccountSelect
+                id="accountId"
+                className="mb-2"
+                value={accountId}
+                onChange={setAccountId}
+              />
             </Col>
           </Row>
-        ) : (
-          <Row gutter={[0, 32]} style={{ marginTop: '2rem' }}>
-            <Col span={8} offset={8}>
-              <Space.Compact compact>
-                <Input
-                  onChange={event => onWriteTask(event)}
-                  style={{ width: 'calc(100% - 60px)' }}
-                  placeholder="Add a Task"
-                  size="large"
-                  value={newTask}
-                />
+        </Layout>
+        <Spin spinning={transactionInProgress}>
+          {!accountHasList ? (
+            <Row gutter={[0, 32]} style={{ marginTop: '2rem' }}>
+              <Col span={8} offset={8}>
                 <Button
-                  onClick={onTaskAdded}
+                  disabled={!accountId}
+                  block
+                  onClick={addNewList}
                   type="primary"
                   style={{ height: '40px', backgroundColor: '#3f67ff' }}
                 >
-                  Add
+                  Add new list
                 </Button>
-                <Button
-                  onClick={call}
-                  type="primary"
-                  style={{ height: '40px', backgroundColor: '#3f67ff' }}
-                >
-                  Run
-                </Button>
-              </Space.Compact>
-            </Col>
-            <Col span={8} offset={8}>
-              {tasks && (
-                <List
-                  size="small"
-                  bordered
-                  dataSource={tasks}
-                  renderItem={(task: Task) => (
-                    <List.Item
-                      actions={[
-                        <div>
-                          {task.completed ? (
-                            <Checkbox defaultChecked={true} disabled />
-                          ) : (
-                            <Checkbox onChange={event => onCheckboxChange(event, task.task_id)} />
-                          )}
-                        </div>,
-                      ]}
-                    >
-                      <List.Item.Meta
-                        title={task.content}
-                        description={
-                          <a
-                            href={`https://explorer.aptoslabs.com/account/${task.address}/`}
-                            target="_blank"
-                          >{`${task.address.slice(0, 6)}...${task.address.slice(-5)}`}</a>
-                        }
-                      />
-                    </List.Item>
-                  )}
-                />
-              )}
-            </Col>
-          </Row>
-        )}
-      </Spin>
+              </Col>
+            </Row>
+          ) : (
+            <Row gutter={[0, 32]} style={{ marginTop: '2rem' }}>
+              <Col span={8} offset={8}>
+                <Space.Compact>
+                  <Input
+                    onChange={event => onWriteTask(event)}
+                    style={{ width: 'calc(100% - 60px)', backgroundColor: 'black' }}
+                    placeholder="Add a Task"
+                    size="large"
+                    value={newTask}
+                  />
+                  <Button
+                    onClick={onTaskAdded}
+                    type="primary"
+                    style={{ height: '40px', backgroundColor: '#3f67ff' }}
+                  >
+                    Add
+                  </Button>
+                  <Button
+                    onClick={call}
+                    type="primary"
+                    style={{ height: '40px', backgroundColor: '#3f67ff' }}
+                  >
+                    Run
+                  </Button>
+                </Space.Compact>
+              </Col>
+              <Col span={8} offset={8}>
+                {tasks && (
+                  <List
+                    size="small"
+                    bordered
+                    dataSource={tasks}
+                    renderItem={(task: Task) => (
+                      <List.Item
+                        actions={[
+                          <div>
+                            {task.completed ? (
+                              <Checkbox defaultChecked={true} disabled />
+                            ) : (
+                              <Checkbox onChange={event => onCheckboxChange(event, task.task_id)} />
+                            )}
+                          </div>,
+                        ]}
+                      >
+                        <List.Item.Meta
+                          title={task.content}
+                          description={
+                            <a
+                              href={`https://explorer.aptoslabs.com/account/${task.address}/`}
+                              target="_blank"
+                            >{`${task.address.slice(0, 6)}...${task.address.slice(-5)}`}</a>
+                          }
+                        />
+                      </List.Item>
+                    )}
+                  />
+                )}
+              </Col>
+            </Row>
+          )}
+        </Spin>
+      </ConfigProvider>
     </>
   );
 }
