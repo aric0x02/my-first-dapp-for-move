@@ -74,9 +74,9 @@
             ],
             "type": "Option<Bytes>"
           },
-          "getResources3": {
+          "getResources": {
             "aliasSection": "mvm",
-            "description": "mvm_getResources3",
+            "description": "mvm_getResources",
             "params": [
               {
                 "name": "account_id",

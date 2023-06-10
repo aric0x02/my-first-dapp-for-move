@@ -1,3 +1,8 @@
+// Copyright 2022 @paritytech/contracts-ui authors & contributors
+// SPDX-License-Identifier: GPL-3.0-only
+
+// Modified Source from https://github.com/aptos-labs/aptos-core/blob/7f1aa09964bb597359df3eb9f227112aeb2a17a7/aptos-move/move-examples/my_first_dapp/client/src/App.tsx
+
 import {
   Layout,
   Row,
@@ -13,51 +18,69 @@ import {
 } from 'antd';
 
 import React, { useEffect, useState } from 'react';
-
-// import './index.css';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
-// import { Network, Provider } from "aptos";
-import { ApiPromise, WsProvider } from '@polkadot/api';
-import { stringToHex, stringToU8a, hexToString, u8aToString, u8aToHex } from '@polkadot/util';
-import { Balance } from '@polkadot/types/interfaces/runtime';
-import yargs, { IsUnknown } from 'yargs';
-import { hideBin } from 'yargs/helpers';
-import { BN } from '@polkadot/util';
-import { typesBundle } from './typesBundle';
-import { HexString, BCS, TxnBuilderTypes, TransactionBuilderRemoteABI } from 'move-tx-builder';
-// const { Keyring } = require('@polkadot/ui-keyring');
-import { useParams } from 'react-router';
-import { Account } from '../account/Account';
-import { Buttons } from '../common/Button';
-import { useApi, useInstantiate, useTransactions } from 'ui/contexts';
-import { createExecuteTx, truncate, printBN } from 'helpers';
-import { SubmittableResult } from 'types';
-import { AccountSelect } from '../account';
+import { ApiPromise } from '@polkadot/api';
+import { stringToHex, hexToString, u8aToHex } from '@polkadot/util';
+import {
+  HexString,
+  BCS,
+  TxnBuilderTypes,
+  TransactionBuilderRemoteABI,
+} from 'move-smart-contract-tx-builder-sdk';
 import type { DefinitionRpcExt } from '@polkadot/types/types';
+import { AccountSelect } from '../account';
+// import { QueueTxResult } from './types';
 import { submitRpc } from './rpc';
-import { QueueTxResult } from './types';
-import { exec } from 'child_process';
+import { useApi, useTransactions } from 'ui/contexts';
+import { createExecuteTx } from 'helpers';
+import { SubmittableResult } from 'types';
 import { useNewContract } from 'ui/hooks';
-const { AccountAddress, TypeTagStruct, EntryFunction, StructTag, ChainId, ModuleId } =
-  TxnBuilderTypes;
+
+const { ModuleId } = TxnBuilderTypes;
 type Task = {
-  address: string;
+  address: string | Uint8Array;
   completed: boolean;
   content: string;
   task_id: string;
 };
-// const Network_DEVNET = 'ws://127.0.0.1:9944'
-// export const provider = new WsProvider(Network_DEVNET);
+type TableItem = {
+  key: string;
+  key_type: string;
+  value_type: string;
+};
+type Payload = {
+  function: string;
+  type_arguments: string[];
+  arguments: string[];
+};
+type AccountResource = {
+  type: string;
+  data: {
+    set_task_event: {
+      counter: number;
+      guid: {
+        guid: {
+          id: {
+            addr: Uint8Array | string;
+            creation_num: number;
+          };
+        };
+        len_bytes: number;
+      };
+    };
+    task_counter: number;
+    tasks: { handle: string };
+  };
+};
 // change this to be your module account address
 export const moduleAddress = '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d';
 
 export function Todo() {
-  const { queue, process, txs, dismiss } = useTransactions();
+  const { queue, process, txs } = useTransactions();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTask, setNewTask] = useState<string>('');
-  const { api, accounts } = useApi();
+  const { api } = useApi();
   const [accountId, setAccountId] = useState('');
-  //   const { account, signAndSubmitTransaction } = useWallet();
   const [accountHasList, setAccountHasList] = useState<boolean>(false);
   const [transactionInProgress, setTransactionInProgress] = useState<boolean>(false);
   const [txId, setTxId] = useState<number>(0);
@@ -69,22 +92,20 @@ export function Todo() {
   };
   const getAccountResource = async (address: string, tag: string, api: ApiPromise) => {
     const tagHexStr = stringToHex(tag);
-    // const un = await api.rpc["mvm"]["getResources3"](address, tagHexStr);
-    const { result }: QueueTxResult = await submitRpc(
-      api,
-      { section: 'mvm', method: 'getResources3' } as DefinitionRpcExt,
-      [address, tagHexStr]
+    const r = await submitRpc(api, { section: 'mvm', method: 'getResources' } as DefinitionRpcExt, [
+      address,
+      tagHexStr,
+    ]);
+    const s = hexToString(JSON.parse(JSON.stringify(r.result)) as string);
+    const res = JSON.parse(s) as AccountResource;
+    res.data.set_task_event.guid.guid.id.addr = u8aToHex(
+      res.data.set_task_event.guid.guid.id.addr as Uint8Array
     );
-    let s = hexToString(JSON.parse(JSON.stringify(result)));
-    let res = JSON.parse(s);
-    res.data.set_task_event.guid.guid.id.addr = u8aToHex(res.data.set_task_event.guid.guid.id.addr);
-    // console.log("=====addr=====", json.data.set_task_event.guid.guid.id.addr);
-    // console.log("=====addr==hex===", u8aToHex(json.data.set_task_event.guid.guid.id.addr));
-    // console.log(json, "======getResource==hexToString=======", s)
+
     return res;
   };
-  const getTableItem = async (tableHandle: string, tableItem: any, api: ApiPromise) => {
-    const { result }: QueueTxResult = await submitRpc(
+  const getTableItem = async (tableHandle: string, tableItem: TableItem, api: ApiPromise) => {
+    const r = await submitRpc(
       api,
       { section: 'mvm', method: 'getTableEntry' } as DefinitionRpcExt,
       [
@@ -94,16 +115,13 @@ export function Todo() {
         stringToHex(tableItem.value_type),
       ]
     );
-    let s = hexToString(JSON.parse(JSON.stringify(result)));
-    let task = JSON.parse(s);
-    task.address = u8aToHex(task.address);
+    const s = hexToString(JSON.parse(JSON.stringify(r.result)) as string);
+    const task = JSON.parse(s) as Task;
+    task.address = u8aToHex(task.address as Uint8Array);
     task.content = hexToString(task.content);
-    // console.log("=====address==hex===", u8aToHex(json.address));
-    // console.log("=====content==string===", hexToString(json.content));
-    // console.log(json, "======getResource==hexToString=======", s)
     return task;
   };
-  const convertModuleId = async (func: string) => {
+  const convertModuleId = (func: string) => {
     const normlize = (s: string) => s.replace(/^0[xX]0*/g, '0x');
     func = normlize(func);
     const funcNameParts = func.split('::');
@@ -118,60 +136,22 @@ export function Todo() {
     return HexString.fromUint8Array(BCS.bcsToBytes(ModuleId.fromStr(`${addr}::${module}`))).hex();
   };
   const getAbi = async (func: string, api: ApiPromise) => {
-    const moduleId = await convertModuleId(func);
+    const moduleId = convertModuleId(func);
     // const un = await api.rpc["mvm"]["getModuleABIs"](moduleId);
-    const { result }: QueueTxResult = await submitRpc(
+    const r = await submitRpc(
       api,
       { section: 'mvm', method: 'getModuleABIs' } as DefinitionRpcExt,
       [moduleId]
     );
-    let s = hexToString(JSON.parse(JSON.stringify(result)));
-    console.log('======getAbi==hexToString=======', s);
-    return s;
+    return hexToString(JSON.parse(JSON.stringify(r.result)) as string);
   };
-  // const execute = async (tx: string, api: ApiPromise) => {
-  //     // Construct the keyring after the API (crypto has an async init)
-  //     // const keyring = new Keyring({ type: 'sr25519' });
-
-  //     // // Add Alice to our keyring with a hard-derivation path (empty phrase, so uses dev)
-  //     // const alice = keyring.addFromUri('//Alice');
-  //     // console.log(alice.address, "======address=======", u8aToHex(keyring.decodeAddress(alice.address)))
-  //     // Create a extrinsic, transferring 12345 units to Bob
-  //     // const execute = api.tx.mvm.execute("0x00010101d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d0a536372697074426f6f6b0873756d5f66756e630208030000000000000008090000000000000000", 1000000);
-  //     // const execute = api.tx.mvm.execute(tx, 1000000);
-
-  //     // // Sign and send the transaction using our account
-  //     // const unsub = await execute.signAndSend(alice, ({ events = [], status, txHash }:any) => {
-  //     //     console.log(`Current status is ${status.type}`);
-
-  //     //     if (status.isFinalized) {
-  //     //         console.log(`Transaction included at blockHash ${status.asFinalized}`);
-  //     //         console.log(`Transaction hash ${txHash.toHex()}`);
-
-  //     //         // Loop through Vec<EventRecord> to display all events
-  //     //         events.forEach(({ phase, event: { data, method, section } }:any) => {
-  //     //             console.log(`\t' ${phase}: ${section}.${method}:: ${data}`);
-  //     //         });
-
-  //     //         unsub();
-  //     //     }
-  //     // });
-
-  //     // console.log('execute sent with hash', hash.toHex());
-  //     // return hash
-  // }
-  // const sleep = async (timeMs: number): Promise<null> => {
-  //     return new Promise((resolve) => {
-  //         setTimeout(resolve, timeMs);
-  //     });
-  // };
-  const call = () => {
+  useEffect(() => {
     async function processTx() {
       txs[txId]?.status === 'queued' && (await process(txId));
     }
     processTx().catch(e => console.error(e));
-  };
-  const signAndSubmitTransaction = async (payload: any, api: ApiPromise) => {
+  }, [process, txId, txs]);
+  const signAndSubmitTransaction = async (payload: Payload, api: ApiPromise) => {
     const abi = await getAbi(payload.function, api);
     const rawTxn = await TransactionBuilderRemoteABI.build(
       abi,
@@ -189,30 +169,7 @@ export function Todo() {
       isValid,
     });
     setTxId(newId);
-    // sleep(19000)
-    // if (txs[txId]?.status === 'queued') {
-    //     await process(txId)
-    // } else {
-    //     console.error(accountId,txs[txId],txs[txId]?.status, "===========txId=========", txId)
-    // }
-    // await execute(HexString.fromUint8Array(BCS.bcsToBytes(rawTxn)).hex(), api)
   };
-  // const waitForTransaction = async (hash: string, api: ApiPromise) => {
-  //     // const tagHexStr = stringToHex(tag);
-  //     // // const un = await api.rpc["mvm"]["getResources3"](address, tagHexStr);
-  //     // const { result }: QueueTxResult = await submitRpc(
-  //     //     api,
-  //     //     { section: 'mvm', method: 'gasToWeight' } as DefinitionRpcExt,
-  //     //     [address, tagHexStr]
-  //     // );
-  //     // let resphex = JSON.stringify(result);
-  //     // let s = hexToString(resphex.slice(3, resphex.length - 1));
-  //     // // let json = JSON.parse(s);
-  //     // // console.log("=====addr=====", json.data.set_task_event.guid.guid.id.addr);
-  //     // // console.log("=====addr==hex===", u8aToHex(json.data.set_task_event.guid.guid.id.addr));
-  //     // // console.log(json, "======getResource==hexToString=======", s)
-  //     // return s;
-  // };
   const fetchList = async () => {
     if (!accountId) return [];
     try {
@@ -223,11 +180,10 @@ export function Todo() {
       );
       setAccountHasList(true);
       // tasks table handle
-      const tableHandle = (todoListResource as any).data.tasks.handle;
+      const tableHandle = todoListResource.data.tasks.handle;
       // tasks table counter
-      const taskCounter = (todoListResource as any).data.task_counter;
-      console.log(tableHandle, '====tableHandle====taskCounter===', taskCounter);
-      let tasks = [];
+      const taskCounter = todoListResource.data.task_counter;
+      const tasks = [];
       let counter = 1;
       while (counter <= taskCounter) {
         const tableItem = {
@@ -289,17 +245,17 @@ export function Todo() {
       address: accountId,
       completed: false,
       content: newTask,
-      task_id: latestId + '',
+      task_id: latestId.toString(),
     };
 
     try {
       // sign and submit transaction to chain
-      signAndSubmitTransaction(payload, api);
+      await signAndSubmitTransaction(payload, api);
       // wait for transaction
       // await provider.waitForTransaction(response.hash);
 
       // Create a new array based on current state:
-      let newTasks = [...tasks];
+      const newTasks = [...tasks];
 
       // Add item to the tasks array
       newTasks.push(newTaskToPush);
@@ -308,7 +264,7 @@ export function Todo() {
       // clear input text
       setNewTask('');
     } catch (error: any) {
-      console.log('error', error);
+      console.error('error', error);
     } finally {
       setTransactionInProgress(false);
     }
@@ -327,7 +283,7 @@ export function Todo() {
 
     try {
       // sign and submit transaction to chain
-      signAndSubmitTransaction(payload, api);
+      await signAndSubmitTransaction(payload, api);
       // wait for transaction
       // await provider.waitForTransaction(response.hash);
 
@@ -352,8 +308,8 @@ export function Todo() {
   };
 
   useEffect(() => {
-    fetchList();
-  }, [accountId]);
+    fetchList().catch(e => console.error(e));
+  });
 
   return (
     <>
@@ -410,13 +366,6 @@ export function Todo() {
                   >
                     Add
                   </Button>
-                  <Button
-                    onClick={call}
-                    type="primary"
-                    style={{ height: '40px', backgroundColor: '#3f67ff' }}
-                  >
-                    Run
-                  </Button>
                 </Space.Compact>
               </Col>
               <Col span={8} offset={8}>
@@ -428,7 +377,7 @@ export function Todo() {
                     renderItem={(task: Task) => (
                       <List.Item
                         actions={[
-                          <div>
+                          <div key="1">
                             {task.completed ? (
                               <Checkbox defaultChecked={true} disabled />
                             ) : (
@@ -443,6 +392,7 @@ export function Todo() {
                             <a
                               href={`https://explorer.aptoslabs.com/account/${task.address}/`}
                               target="_blank"
+                              rel="noreferrer"
                             >{`${task.address.slice(0, 6)}...${task.address.slice(-5)}`}</a>
                           }
                         />

@@ -6,12 +6,14 @@ import { useSearchParams } from 'react-router-dom';
 import { web3Accounts, web3Enable, web3EnablePromise } from '@polkadot/extension-dapp';
 import { WsProvider } from '@polkadot/api';
 import { keyring } from '@polkadot/ui-keyring';
+import type { OverrideBundleType } from '@polkadot/types/types';
 import { RPC } from '../../constants';
+import { typesBundle } from './typesBundle';
 import { ApiPromise, ApiState, ChainProperties, Account, Status, WeightV2 } from 'types';
 import { isValidWsUrl, isKeyringLoaded, getChainProperties } from 'helpers';
 import { useLocalStorage } from 'ui/hooks/useLocalStorage';
 import { NoticeBanner } from 'ui/components/common/NoticeBanner';
-import { typesBundle } from './typesBundle';
+
 export const ApiContext = createContext<ApiState | undefined>(undefined);
 
 export const ApiContextProvider = ({ children }: React.PropsWithChildren<Partial<ApiState>>) => {

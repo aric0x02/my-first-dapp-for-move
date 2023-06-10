@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 import { Outlet } from 'react-router';
-import { Sidebar, AwaitApis } from 'ui/components';
+import { AwaitApis } from 'ui/components';
 import {
   ApiContextProvider,
   DatabaseContextProvider,
@@ -17,7 +17,7 @@ const App = (): JSX.Element => {
         <DatabaseContextProvider>
           <TransactionsContextProvider>
             <div className="relative flex-col md:flex-row md:fixed flex min-h-screen inset-0 overflow-hidden dark:bg-gray-900 dark:text-white text-black">
-              <Sidebar />
+              {/* <Sidebar /> */}
               <AwaitApis>
                 <Outlet />
               </AwaitApis>

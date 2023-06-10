@@ -1,11 +1,10 @@
-// Copyright 2017-2023 @polkadot/react-params authors & contributors
-// SPDX-License-Identifier: Apache-2.0
-
-import type { Props } from './types';
+// Copyright 2022 @paritytech/contracts-ui authors & contributors
+// SPDX-License-Identifier: GPL-3.0-only
 
 import React, { useCallback, useState } from 'react';
-import { Switch } from '../common/Switch';
 import { compactAddLength } from '@polkadot/util';
+import { Switch } from '../common/Switch';
+import type { Props } from './types';
 
 import BaseBytes from './BaseBytes';
 import File from './File';

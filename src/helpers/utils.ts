@@ -1,12 +1,12 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+// Copyright 2022 @paritytech/contracts-ui authors & contributors
+// SPDX-License-Identifier: GPL-3.0-only
+
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/restrict-template-expressions */
 /**
  * @ignore Don't show this file in documentation.
- */ /** */
-
-// import fetch from 'node-fetch';
+ */
 
 /**
  * Send a JSONRPC request to the node at http://0.0.0.0:9933.

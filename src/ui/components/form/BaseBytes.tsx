@@ -1,14 +1,5 @@
-// Copyright 2017-2023 @polkadot/react-params authors & contributors
-// SPDX-License-Identifier: Apache-2.0
-
-import type {
-  RawParam,
-  RawParamOnChange,
-  RawParamOnEnter,
-  RawParamOnEscape,
-  Size,
-  TypeDefExt,
-} from './types';
+// Copyright 2022 @paritytech/contracts-ui authors & contributors
+// SPDX-License-Identifier: GPL-3.0-only
 
 import React, { useCallback, useState } from 'react';
 
@@ -23,6 +14,14 @@ import {
   u8aToU8a,
 } from '@polkadot/util';
 import { decodeAddress } from '@polkadot/util-crypto';
+import type {
+  RawParam,
+  RawParamOnChange,
+  RawParamOnEnter,
+  RawParamOnEscape,
+  Size,
+  TypeDefExt,
+} from './types';
 
 import Bare from './Bare';
 import { Input } from './Input';
@@ -109,10 +108,10 @@ function BaseBytes({
 
   const _onChange = useCallback(
     (hex: string): void => {
-      let [isValid, isAddress, value] = convertInput(hex);
-
-      isValid =
-        isValid &&
+      const [isValids, isAddress, values] = convertInput(hex);
+      let value = values;
+      const isValid =
+        isValids &&
         validate(value) &&
         (length !== -1 ? value.length === length : value.length !== 0 || hex === '0x');
 

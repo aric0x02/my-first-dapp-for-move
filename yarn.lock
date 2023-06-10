@@ -3197,6 +3197,7 @@ __metadata:
     husky: ^8.0.3
     istanbul-lib-coverage: ^3.2.0
     lint-staged: ">=13.1.0"
+    move-smart-contract-tx-builder-sdk: ^1.4.0
     nyc: ^15.1.0
     postcss: ^8.4.20
     postcss-import: ^15.1.0
@@ -6657,6 +6658,16 @@ __metadata:
   version: 9.1.5
   resolution: "mock-socket@npm:9.1.5"
   checksum: a01586bc2850eb5809eda6de0c7ab19255c1e0eb217a805f86ba662bb4aab00b919032d67e7c826c6c12bcfb2fbe19cecbacf0ab6184936487edc4ba37d3ba53
+  languageName: node
+  linkType: hard
+
+"move-smart-contract-tx-builder-sdk@npm:^1.4.0":
+  version: 1.4.0
+  resolution: "move-smart-contract-tx-builder-sdk@npm:1.4.0"
+  dependencies:
+    "@noble/hashes": 1.1.3
+    tweetnacl: ^1.0.3
+  checksum: 78444fee35bbf89b3de0399a7e3de8621276fc7a6d4c93732836f6b40778eb0c0f01e17ac9e511e04f808c47784779a33d54e3d4cb6871fdab076bf5f1d6e242
   languageName: node
   linkType: hard
 

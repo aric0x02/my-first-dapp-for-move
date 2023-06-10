@@ -1,11 +1,9 @@
-// Copyright 2017-2023 @polkadot/react-signer authors & contributors
-// SPDX-License-Identifier: Apache-2.0
+// Copyright 2022 @paritytech/contracts-ui authors & contributors
+// SPDX-License-Identifier: GPL-3.0-only
 
 import type { DefinitionRpcExt } from '@polkadot/types/types';
-
 import { ApiPromise } from '@polkadot/api';
-
-import { assert, isFunction, loggerFormat } from '@polkadot/util';
+import { assert, isFunction } from '@polkadot/util';
 import { QueueTxResult } from './types';
 
 export async function submitRpc(
@@ -26,7 +24,7 @@ export async function submitRpc(
 
     const result = await rpc[section][method](...values);
 
-    console.log('submitRpc: result ::', loggerFormat(result));
+    // console.log('submitRpc: result ::', loggerFormat(result));
 
     return {
       result,

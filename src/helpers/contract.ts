@@ -1,18 +1,10 @@
 // Copyright 2022 @paritytech/contracts-ui authors & contributors
 // SPDX-License-Identifier: GPL-3.0-only
 
-// import { BlueprintPromise, CodePromise } from '@polkadot/api-contract';
-import { isValidAddress, isValidCodeHash } from './util';
-// import { transformUserInput } from './callOptions';
 import { u8aToHex } from '@polkadot/util';
+import { isValidAddress, isValidCodeHash } from './util';
 
-import {
-  ApiPromise,
-  CodeBundleDocument,
-  //   BlueprintOptions,
-  InstantiateData,
-  SubmittableExtrinsic,
-} from 'types';
+import { ApiPromise, CodeBundleDocument, InstantiateData, SubmittableExtrinsic } from 'types';
 
 export function createExecuteTx(
   api: ApiPromise,
